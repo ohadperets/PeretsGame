@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>פרץיאס – משחק המילים המשפחתי</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ============ SCREEN: HOME ============ -->
+    <div id="screen-home" class="screen active">
+        <div class="home-container">
+            <div class="logo-area">
+                <div class="logo-icon">🎯</div>
+                <h1 class="game-title">פרץיאס</h1>
+                <p class="game-subtitle">משחק המילים המשפחתי</p>
+            </div>
+            <button class="btn btn-primary btn-large" onclick="showScreen('screen-setup')">
+                <span>🎮</span> משחק חדש
+            </button>
+            <button class="btn btn-primary btn-large btn-resume" id="btn-resume" onclick="resumeSavedGame()" style="display:none; background: linear-gradient(135deg, #2E7D32, #1B5E20);">
+                <span>▶️</span> המשך משחק שמור
+            </button>
+            <button class="btn btn-secondary" onclick="showScreen('screen-rules')">
+                <span>📖</span> חוקי המשחק
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ SCREEN: RULES ============ -->
+    <div id="screen-rules" class="screen">
+        <div class="screen-content">
+            <div class="screen-header">
+                <button class="btn-back" onclick="showScreen('screen-home')">→</button>
+                <h2>חוקי המשחק</h2>
+            </div>
+            <div class="rules-content">
+                <div class="rule-card">
+                    <div class="rule-icon">🎯</div>
+                    <h3>מטרת המשחק</h3>
+                    <p>להסביר כמה שיותר מילים בזמן מוגבל, בלי להגיד את המילה עצמה!</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">👥</div>
+                    <h3>מבנה המשחק</h3>
+                    <p>2–4 קבוצות. בכל תור שחקן אחד מסביר והשאר מנחשים.</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">⏱️</div>
+                    <h3>מהלך תור</h3>
+                    <p>60 שניות לכל תור. ניחוש נכון = +1, דילוג = 0 או -1.</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">🚫</div>
+                    <h3>אסור!</h3>
+                    <ul>
+                        <li>להשתמש במילה עצמה או חלק ממנה</li>
+                        <li>לתרגם לשפה אחרת</li>
+                        <li>להשתמש בצליל דומה</li>
+                    </ul>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">✅</div>
+                    <h3>מותר!</h3>
+                    <ul>
+                        <li>מילים נרדפות</li>
+                        <li>תיאורים</li>
+                        <li>סיפורים קצרים</li>
+                    </ul>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">📊</div>
+                    <h3>ניקוד</h3>
+                    <ul>
+                        <li>🟢 מילה קלה = 1 נקודה</li>
+                        <li>🟡 בינונית = 2 נקודות</li>
+                        <li>🔴 קשה = 3 נקודות</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SCREEN: SETUP ============ -->
+    <div id="screen-setup" class="screen">
+        <div class="screen-content">
+            <div class="screen-header">
+                <button class="btn-back" onclick="showScreen('screen-home')">→</button>
+                <h2>הגדרות משחק</h2>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">מספר קבוצות</label>
+                <div class="team-selector">
+                    <button class="team-btn selected" onclick="setTeams(2)">2</button>
+                    <button class="team-btn" onclick="setTeams(3)">3</button>
+                    <button class="team-btn" onclick="setTeams(4)">4</button>
+                </div>
+            </div>
+
+            <div class="setup-section" id="team-names-section">
+                <label class="setup-label">שמות קבוצות</label>
+                <div id="team-names-inputs"></div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">מצב משחק</label>
+                <div class="mode-grid">
+                    <button class="mode-btn selected" data-mode="normal" onclick="setMode('normal')">
+                        <span class="mode-icon">🗣</span>
+                        <span class="mode-name">רגיל</span>
+                        <span class="mode-desc">הסבר חופשי</span>
+                    </button>
+                    <button class="mode-btn" data-mode="pantomime" onclick="setMode('pantomime')">
+                        <span class="mode-icon">🎭</span>
+                        <span class="mode-name">פנטומימה</span>
+                        <span class="mode-desc">בלי מילים</span>
+                    </button>
+                    <button class="mode-btn" data-mode="drawing" onclick="setMode('drawing')">
+                        <span class="mode-icon">✏️</span>
+                        <span class="mode-name">ציור</span>
+                        <span class="mode-desc">כמו פיקשנרי</span>
+                    </button>
+                    <button class="mode-btn" data-mode="fast" onclick="setMode('fast')">
+                        <span class="mode-icon">⚡</span>
+                        <span class="mode-name">מהיר</span>
+                        <span class="mode-desc">30 שניות</span>
+                    </button>
+                    <button class="mode-btn" data-mode="pressure" onclick="setMode('pressure')">
+                        <span class="mode-icon">🔥</span>
+                        <span class="mode-name">לחץ</span>
+                        <span class="mode-desc">טעות = מינוס</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">רמת קושי</label>
+                <div class="difficulty-selector">
+                    <button class="diff-btn diff-easy selected" data-diff="easy" onclick="setDifficulty('easy')">
+                        🟢 קל
+                    </button>
+                    <button class="diff-btn diff-medium" data-diff="medium" onclick="setDifficulty('medium')">
+                        🟡 בינוני
+                    </button>
+                    <button class="diff-btn diff-hard" data-diff="hard" onclick="setDifficulty('hard')">
+                        🔴 קשה
+                    </button>
+                    <button class="diff-btn diff-mix" data-diff="mix" onclick="setDifficulty('mix')">
+                        🎲 מעורב
+                    </button>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">יעד ניצחון</label>
+                <div class="goal-selector">
+                    <button class="goal-btn" onclick="setGoal(15)">15</button>
+                    <button class="goal-btn selected" onclick="setGoal(30)">30</button>
+                    <button class="goal-btn" onclick="setGoal(50)">50</button>
+                    <button class="goal-btn" onclick="setGoal(100)">100</button>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">דילוג</label>
+                <div class="skip-selector">
+                    <button class="skip-btn selected" data-skip="free" onclick="setSkipPenalty('free')">חינם (0)</button>
+                    <button class="skip-btn" data-skip="penalty" onclick="setSkipPenalty('penalty')">עם קנס (-1)</button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-large" onclick="startGame()" style="margin-top: 24px;">
+                🚀 התחל משחק!
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ SCREEN: TURN INTRO ============ -->
+    <div id="screen-turn" class="screen">
+        <div class="turn-container">
+            <div class="turn-team-badge" id="turn-team-badge">קבוצה 1</div>
+            <div class="turn-info">
+                <p class="turn-label">תורכם!</p>
+                <p class="turn-mode-label" id="turn-mode-label">🗣 רגיל</p>
+            </div>
+            <p class="turn-instruction">תנו את הטלפון למסביר/ה</p>
+            <button class="btn btn-primary btn-large pulse" onclick="startTurn()">
+                👆 לחצו להתחיל
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ SCREEN: PLAY ============ -->
+    <div id="screen-play" class="screen">
+        <div class="play-container">
+            <div class="play-header">
+                <button class="btn-pause" onclick="pauseGame()" title="הפסקה">⏸</button>
+                <div class="timer-container">
+                    <div class="timer-ring" id="timer-ring">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="timer-bg" cx="50" cy="50" r="45"/>
+                            <circle class="timer-fill" id="timer-fill" cx="50" cy="50" r="45"/>
+                        </svg>
+                        <span class="timer-text" id="timer-text">60</span>
+                    </div>
+                </div>
+                <div class="play-team-name" id="play-team-name">קבוצה 1</div>
+                <div class="play-score-mini" id="play-score-mini">+0</div>
+            </div>
+
+            <!-- Pause Overlay -->
+            <div class="pause-overlay" id="pause-overlay">
+                <div class="pause-modal">
+                    <div class="pause-icon">⏸</div>
+                    <h2 class="pause-title">המשחק מושהה</h2>
+                    <p class="pause-subtitle">קחו אוויר... 😊</p>
+                    <button class="btn btn-primary btn-large" onclick="resumeGame()">
+                        ▶️ המשך לשחק
+                    </button>
+                    <button class="btn btn-secondary" onclick="endTurnEarly()">
+                        ⏹ סיים תור
+                    </button>
+                    <button class="btn btn-danger" onclick="quitGame()">
+                        🚪 צא מהמשחק
+                    </button>
+                </div>
+            </div>
+
+            <div class="word-card" id="word-card">
+                <div class="word-difficulty" id="word-difficulty">קל</div>
+                <div class="word-points" id="word-points">+1</div>
+                <div class="word-text" id="word-text">מילה</div>
+            </div>
+
+            <div class="play-actions">
+                <button class="btn-action btn-skip" id="btn-skip" onclick="skipWord()">
+                    <span class="action-icon">⏭</span>
+                    <span>דילוג</span>
+                </button>
+                <button class="btn-action btn-correct" onclick="correctWord()">
+                    <span class="action-icon">✅</span>
+                    <span>נכון!</span>
+                </button>
+                <button class="btn-action btn-foul" onclick="foulWord()">
+                    <span class="action-icon">🚫</span>
+                    <span>עבירה</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ SCREEN: TURN SUMMARY ============ -->
+    <div id="screen-summary" class="screen">
+        <div class="screen-content">
+            <div class="summary-header">
+                <h2>סיכום תור</h2>
+                <div class="summary-team" id="summary-team">קבוצה 1</div>
+            </div>
+            <div class="summary-score" id="summary-score">+5</div>
+            <div class="summary-list" id="summary-list"></div>
+            <button class="btn btn-primary btn-large" onclick="nextTurn()">
+                ➡️ תור הבא
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ SCREEN: SCOREBOARD ============ -->
+    <div id="screen-scoreboard" class="screen">
+        <div class="screen-content">
+            <div class="screen-header">
+                <h2>🏆 טבלת ניקוד</h2>
+            </div>
+            <div class="scoreboard" id="scoreboard"></div>
+            <button class="btn btn-primary btn-large" onclick="showScreen('screen-turn'); prepareTurn();">
+                ▶️ המשך משחק
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ SCREEN: WINNER ============ -->
+    <div id="screen-winner" class="screen">
+        <div class="winner-container">
+            <div class="confetti" id="confetti"></div>
+            <div class="winner-trophy">🏆</div>
+            <h2 class="winner-title">ניצחון!</h2>
+            <div class="winner-team" id="winner-team">קבוצה 1</div>
+            <div class="winner-score" id="winner-score">30 נקודות</div>
+            <div class="final-scoreboard" id="final-scoreboard"></div>
+            <button class="btn btn-primary btn-large" onclick="resetGame()">
+                🔄 משחק חדש
+            </button>
+            <button class="btn btn-secondary" onclick="showScreen('screen-home')">
+                🏠 דף הבית
+            </button>
+        </div>
+    </div>
+
+    <script src="words.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
