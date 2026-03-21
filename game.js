@@ -692,21 +692,91 @@ function playVictory() {
             osc.stop(now + 1.5);
         });
         
-        // Shimmer effect
-        for (let i = 0; i < 5; i++) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = 'sine';
-            osc.frequency.value = 2000 + Math.random() * 2000;
-            gain.gain.setValueAtTime(0, now + 0.5 + i * 0.1);
-            gain.gain.linearRampToValueAtTime(0.03, now + 0.55 + i * 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8 + i * 0.1);
-            osc.start(now + 0.5 + i * 0.1);
-            osc.stop(now + 0.9 + i * 0.1);
+        // APPLAUSE & CHEERING - starts after fanfare
+        const applauseStart = now + 0.8;
+        const applauseDuration = 3.5;
+        
+        // Create applause using noise bursts (simulates clapping)
+        for (let i = 0; i < 80; i++) {
+            const clap = createClap(ctx, applauseStart + Math.random() * applauseDuration);
         }
+        
+        // Cheering - crowd "wooo" sound using filtered oscillators
+        for (let i = 0; i < 6; i++) {
+            const cheerStart = applauseStart + i * 0.4 + Math.random() * 0.2;
+            createCheer(ctx, cheerStart);
+        }
+        
     } catch (e) {}
+}
+
+function createClap(ctx, startTime) {
+    // Create a single clap sound using filtered noise
+    const bufferSize = ctx.sampleRate * 0.05; // 50ms
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    // Generate noise with exponential decay
+    for (let i = 0; i < bufferSize; i++) {
+        const decay = Math.exp(-i / (bufferSize * 0.15));
+        data[i] = (Math.random() * 2 - 1) * decay;
+    }
+    
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1500 + Math.random() * 1500;
+    filter.Q.value = 0.5;
+    
+    const gain = ctx.createGain();
+    gain.gain.value = 0.08 + Math.random() * 0.06;
+    
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    
+    source.start(startTime);
+}
+
+function createCheer(ctx, startTime) {
+    // Create a "wooo" cheering sound
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(filter);
+    filter.connect(ctx.destination);
+    
+    // Random base frequency for variety
+    const baseFreq = 300 + Math.random() * 200;
+    
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(baseFreq, startTime);
+    osc1.frequency.linearRampToValueAtTime(baseFreq * 1.5, startTime + 0.15);
+    osc1.frequency.linearRampToValueAtTime(baseFreq * 1.3, startTime + 0.5);
+    
+    osc2.type = 'sawtooth';
+    osc2.frequency.setValueAtTime(baseFreq * 1.01, startTime);
+    osc2.frequency.linearRampToValueAtTime(baseFreq * 1.52, startTime + 0.15);
+    osc2.frequency.linearRampToValueAtTime(baseFreq * 1.31, startTime + 0.5);
+    
+    filter.type = 'lowpass';
+    filter.frequency.value = 1200;
+    
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.04, startTime + 0.05);
+    gain.gain.setValueAtTime(0.04, startTime + 0.35);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.6);
+    
+    osc1.start(startTime);
+    osc2.start(startTime);
+    osc1.stop(startTime + 0.6);
+    osc2.stop(startTime + 0.6);
 }
 
 // ---- Reset ----
