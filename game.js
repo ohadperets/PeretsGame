@@ -9,7 +9,7 @@ let gameState = {
     numTeams: 2,
     teams: [],
     mode: 'normal',
-    difficulty: 'mix',
+    difficulty: 'easy',
     goal: 30,
     skipPenalty: 'free',
     currentTeamIndex: 0,
