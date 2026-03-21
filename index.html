@@ -50,7 +50,7 @@
             <button class="btn btn-secondary" onclick="showScreen('screen-rules')">
                 <span>📖</span> חוקי המשחק
             </button>
-            <div class="version-info">גרסה 1.0.1.4 | עדכון אחרון: 21.03.2026</div>
+            <div class="version-info">גרסה 1.0.1.5 | עדכון אחרון: 21.03.2026</div>
             <div class="developer-credit">© Developed by Op2</div>
         </div>
     </div>
@@ -132,37 +132,6 @@
             </div>
 
             <div class="setup-section">
-                <label class="setup-label">מצב משחק</label>
-                <div class="mode-grid">
-                    <button class="mode-btn selected" data-mode="normal" onclick="setMode('normal')">
-                        <span class="mode-icon">🗣</span>
-                        <span class="mode-name">רגיל</span>
-                        <span class="mode-desc">הסבר חופשי</span>
-                    </button>
-                    <button class="mode-btn" data-mode="pantomime" onclick="setMode('pantomime')">
-                        <span class="mode-icon">🎭</span>
-                        <span class="mode-name">פנטומימה</span>
-                        <span class="mode-desc">בלי מילים</span>
-                    </button>
-                    <button class="mode-btn" data-mode="drawing" onclick="setMode('drawing')">
-                        <span class="mode-icon">✏️</span>
-                        <span class="mode-name">ציור</span>
-                        <span class="mode-desc">כמו פיקשנרי</span>
-                    </button>
-                    <button class="mode-btn" data-mode="fast" onclick="setMode('fast')">
-                        <span class="mode-icon">⚡</span>
-                        <span class="mode-name">מהיר</span>
-                        <span class="mode-desc">30 שניות</span>
-                    </button>
-                    <button class="mode-btn" data-mode="pressure" onclick="setMode('pressure')">
-                        <span class="mode-icon">🔥</span>
-                        <span class="mode-name">לחץ</span>
-                        <span class="mode-desc">טעות = מינוס</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="setup-section">
                 <label class="setup-label">רמת קושי</label>
                 <div class="difficulty-selector">
                     <button class="diff-btn diff-easy" data-diff="easy" onclick="setDifficulty('easy')">
@@ -210,7 +179,6 @@
             <div class="turn-team-badge" id="turn-team-badge">קבוצה 1</div>
             <div class="turn-info">
                 <p class="turn-label">תורכם!</p>
-                <p class="turn-mode-label" id="turn-mode-label">🗣 רגיל</p>
             </div>
             <p class="turn-instruction">תנו את הטלפון למסביר/ה</p>
             <button class="btn btn-primary btn-large pulse" onclick="startTurn()">

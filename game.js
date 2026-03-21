@@ -30,15 +30,6 @@ let turnState = {
 
 let currentGameDocId = null;
 
-// ---- Mode labels ----
-const MODE_LABELS = {
-    normal: '🗣 רגיל',
-    pantomime: '🎭 פנטומימה',
-    drawing: '✏️ ציור',
-    fast: '⚡ מהיר',
-    pressure: '🔥 לחץ',
-};
-
 // ---- Default team colors ----
 const TEAM_COLORS = ['#C62828', '#1565C0', '#2E7D32', '#F57F17'];
 const TEAM_DEFAULTS = ['קבוצה אדומה', 'קבוצה כחולה', 'קבוצה ירוקה', 'קבוצה צהובה'];
@@ -74,13 +65,6 @@ function renderTeamNameInputs() {
     }
 }
 
-// ---- Setup: Mode ----
-function setMode(mode) {
-    gameState.mode = mode;
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
-    document.querySelector(`[data-mode="${mode}"]`).classList.add('selected');
-}
-
 // ---- Setup: Difficulty ----
 function setDifficulty(diff) {
     gameState.difficulty = diff;
@@ -114,8 +98,8 @@ function startGame() {
         gameState.teams.push({ name, score: 0, color: TEAM_COLORS[i] });
     }
 
-    // Set timer based on mode
-    gameState.timerDuration = gameState.mode === 'fast' ? 30 : 60;
+    // Set timer duration (60 seconds)
+    gameState.timerDuration = 60;
     gameState.currentTeamIndex = 0;
 
     // Reset used words
@@ -138,7 +122,6 @@ function prepareTurn() {
     document.getElementById('turn-team-badge').textContent = team.name;
     document.getElementById('turn-team-badge').style.background = team.color + '44';
     document.getElementById('turn-team-badge').style.color = '#fff';
-    document.getElementById('turn-mode-label').textContent = MODE_LABELS[gameState.mode];
 }
 
 // ---- Start Turn ----
@@ -302,7 +285,7 @@ function skipWord() {
 // ---- Foul ----
 function foulWord() {
     if (!turnState.timer) return;
-    const penalty = gameState.mode === 'pressure' ? -2 : -1;
+    const penalty = -1;
     turnState.roundScore += penalty;
     turnState.wordHistory.push({
         word: turnState.currentWord,
