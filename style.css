@@ -180,6 +180,15 @@ body {
     max-width: 320px;
 }
 
+.version-info {
+    margin-top: 20px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    direction: rtl;
+}
+
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
