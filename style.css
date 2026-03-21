@@ -189,6 +189,15 @@ body {
     direction: rtl;
 }
 
+.developer-credit {
+    margin-top: 8px;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    direction: ltr;
+}
+
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
