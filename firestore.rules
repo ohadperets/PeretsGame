@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Games collection – anyone can create/update (no auth required)
+    match /games/{gameId} {
+      allow create: if true;
+      allow update: if true;
+      allow read: if false; // Only via Firebase Console
+
+      // Turns sub-collection
+      match /turns/{turnId} {
+        allow create: if true;
+        allow read: if false;
+      }
+    }
+
+    // Global stats counter
+    match /stats/{docId} {
+      allow write: if true;
+      allow read: if false;
+    }
+  }
+}

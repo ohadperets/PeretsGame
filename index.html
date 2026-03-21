@@ -163,7 +163,7 @@
             <div class="setup-section">
                 <label class="setup-label">רמת קושי</label>
                 <div class="difficulty-selector">
-                    <button class="diff-btn diff-easy selected" data-diff="easy" onclick="setDifficulty('easy')">
+                    <button class="diff-btn diff-easy" data-diff="easy" onclick="setDifficulty('easy')">
                         🟢 קל
                     </button>
                     <button class="diff-btn diff-medium" data-diff="medium" onclick="setDifficulty('medium')">
@@ -172,7 +172,7 @@
                     <button class="diff-btn diff-hard" data-diff="hard" onclick="setDifficulty('hard')">
                         🔴 קשה
                     </button>
-                    <button class="diff-btn diff-mix" data-diff="mix" onclick="setDifficulty('mix')">
+                    <button class="diff-btn diff-mix selected" data-diff="mix" onclick="setDifficulty('mix')">
                         🎲 מעורב
                     </button>
                 </div>
@@ -322,7 +322,13 @@
         </div>
     </div>
 
+    <!-- Firebase SDK (auto-configured via Firebase Hosting) -->
+    <script src="/__/firebase/10.12.0/firebase-app-compat.js"></script>
+    <script src="/__/firebase/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="/__/firebase/init.js"></script>
+
     <script src="words.js"></script>
+    <script src="db.js"></script>
     <script src="game.js"></script>
 </body>
 </html>

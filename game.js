@@ -9,7 +9,7 @@ let gameState = {
     numTeams: 2,
     teams: [],
     mode: 'normal',
-    difficulty: 'easy',
+    difficulty: 'mix',
     goal: 30,
     skipPenalty: 'free',
     currentTeamIndex: 0,
@@ -27,6 +27,8 @@ let turnState = {
     wordQueue: [],
     isPaused: false,
 };
+
+let currentGameDocId = null;
 
 // ---- Mode labels ----
 const MODE_LABELS = {
@@ -119,6 +121,12 @@ function startGame() {
     // Reset used words
     turnState.usedWords = new Set();
 
+    // Log game start to Firestore
+    DB.logGameStart(gameState).then(docId => {
+        currentGameDocId = docId;
+    });
+    DB.incrementGamesCounter();
+
     saveGameState();
     prepareTurn();
     showScreen('screen-turn');
@@ -166,11 +174,19 @@ function buildWordQueue() {
         }
     }
 
+    // Remove duplicates (same word in multiple categories – keep first occurrence)
+    const seen = new Set();
+    pool = pool.filter(item => {
+        if (seen.has(item.word)) return false;
+        seen.add(item.word);
+        return true;
+    });
+
     // Remove used words
     pool = pool.filter(item => !turnState.usedWords.has(item.word));
 
-    // If running low, reset used words
-    if (pool.length < 10) {
+    // Only reset if pool is completely exhausted
+    if (pool.length === 0) {
         turnState.usedWords.clear();
         pool = [];
         if (gameState.difficulty === 'mix') {
@@ -183,6 +199,13 @@ function buildWordQueue() {
                 WORDS[cat].forEach(w => pool.push({ word: w, category: cat }));
             }
         }
+        // Deduplicate again after reset
+        const seen2 = new Set();
+        pool = pool.filter(item => {
+            if (seen2.has(item.word)) return false;
+            seen2.add(item.word);
+            return true;
+        });
     }
 
     // Shuffle
@@ -327,6 +350,15 @@ function endTurn() {
 
     // Show summary
     const team = gameState.teams[gameState.currentTeamIndex];
+
+    // Log turn to Firestore
+    DB.logTurn(currentGameDocId, {
+        teamName: team.name,
+        teamIndex: gameState.currentTeamIndex,
+        roundScore: turnState.roundScore,
+        wordHistory: turnState.wordHistory,
+    });
+
     document.getElementById('summary-team').textContent = team.name;
 
     const scoreEl = document.getElementById('summary-score');
@@ -362,6 +394,8 @@ function nextTurn() {
     const winner = gameState.teams.find(t => t.score >= gameState.goal);
     if (winner) {
         clearSavedGame();
+        DB.logGameEnd(currentGameDocId, gameState, winner);
+        currentGameDocId = null;
         showWinner(winner);
         return;
     }
@@ -620,6 +654,7 @@ function resumeSavedGame() {
 
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', () => {
+    DB.init();
     renderTeamNameInputs();
     checkSavedGame();
 });
