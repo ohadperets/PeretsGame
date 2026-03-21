@@ -233,6 +233,7 @@ function correctWord() {
     turnState.wordHistory.push({ word: turnState.currentWord, result: 'correct', points });
     updatePlayScore();
     vibrate(30);
+    playCorrect();
 
     // Check for immediate winner during gameplay
     const currentTeam = gameState.teams[gameState.currentTeamIndex];
@@ -280,6 +281,7 @@ function skipWord() {
     updatePlayScore();
     nextWord();
     vibrate(15);
+    playSkip();
 }
 
 // ---- Foul ----
@@ -295,6 +297,7 @@ function foulWord() {
     updatePlayScore();
     nextWord();
     vibrate([50, 30, 50]);
+    playFoul();
 }
 
 function updatePlayScore() {
@@ -476,6 +479,7 @@ function showWinner(winner) {
 
     showScreen('screen-winner');
     launchConfetti();
+    playVictory();
 }
 
 // ---- Confetti ----
@@ -516,6 +520,79 @@ function playBuzz() {
     } catch (e) {
         // Audio not supported
     }
+}
+
+function playCorrect() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.value = 0.2;
+        osc.start();
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.stop(ctx.currentTime + 0.25);
+    } catch (e) {}
+}
+
+function playSkip() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = 600;
+        gain.gain.value = 0.12;
+        osc.start();
+        osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        osc.stop(ctx.currentTime + 0.15);
+    } catch (e) {}
+}
+
+function playFoul() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.value = 200;
+        gain.gain.value = 0.15;
+        osc.start();
+        osc.frequency.setValueAtTime(200, ctx.currentTime);
+        osc.frequency.setValueAtTime(150, ctx.currentTime + 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        osc.stop(ctx.currentTime + 0.3);
+    } catch (e) {}
+}
+
+function playVictory() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.value = 0;
+            osc.start(ctx.currentTime + i * 0.15);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.4);
+            osc.stop(ctx.currentTime + i * 0.15 + 0.4);
+        });
+    } catch (e) {}
 }
 
 // ---- Reset ----
