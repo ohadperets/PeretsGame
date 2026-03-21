@@ -249,8 +249,39 @@ function correctWord() {
     turnState.roundScore += points;
     turnState.wordHistory.push({ word: turnState.currentWord, result: 'correct', points });
     updatePlayScore();
-    nextWord();
     vibrate(30);
+
+    // Check for immediate winner during gameplay
+    const currentTeam = gameState.teams[gameState.currentTeamIndex];
+    const potentialScore = currentTeam.score + turnState.roundScore;
+    if (potentialScore >= gameState.goal) {
+        // Stop timer and declare winner immediately
+        clearInterval(turnState.timer);
+        turnState.timer = null;
+        turnState.isPaused = false;
+        document.getElementById('pause-overlay').classList.remove('active');
+        document.getElementById('word-card').classList.remove('paused');
+        
+        // Update team score
+        currentTeam.score = potentialScore;
+        saveGameState();
+        
+        // Log turn and game end
+        DB.logTurn(currentGameDocId, {
+            teamName: currentTeam.name,
+            teamIndex: gameState.currentTeamIndex,
+            roundScore: turnState.roundScore,
+            wordHistory: turnState.wordHistory,
+        });
+        
+        clearSavedGame();
+        DB.logGameEnd(currentGameDocId, gameState, currentTeam);
+        currentGameDocId = null;
+        showWinner(currentTeam);
+        return;
+    }
+
+    nextWord();
 }
 
 // ---- Skip ----
@@ -348,8 +379,27 @@ function endTurn() {
     // Save after each turn
     saveGameState();
 
-    // Show summary
     const team = gameState.teams[gameState.currentTeamIndex];
+
+    // Log turn to Firestore
+    DB.logTurn(currentGameDocId, {
+        teamName: team.name,
+        teamIndex: gameState.currentTeamIndex,
+        roundScore: turnState.roundScore,
+        wordHistory: turnState.wordHistory,
+    });
+
+    // Check for immediate winner - stop game if goal reached
+    const winner = gameState.teams.find(t => t.score >= gameState.goal);
+    if (winner) {
+        clearSavedGame();
+        DB.logGameEnd(currentGameDocId, gameState, winner);
+        currentGameDocId = null;
+        showWinner(winner);
+        return;
+    }
+
+    // Show summary
 
     // Log turn to Firestore
     DB.logTurn(currentGameDocId, {
@@ -390,15 +440,6 @@ function endTurn() {
 
 // ---- Next Turn ----
 function nextTurn() {
-    // Check for winner
-    const winner = gameState.teams.find(t => t.score >= gameState.goal);
-    if (winner) {
-        clearSavedGame();
-        DB.logGameEnd(currentGameDocId, gameState, winner);
-        currentGameDocId = null;
-        showWinner(winner);
-        return;
-    }
 
     // Show scoreboard
     renderScoreboard();
