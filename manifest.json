@@ -1,0 +1,19 @@
+{
+  "name": "פרץיאס – משחק המילים המשפחתי",
+  "short_name": "פרץיאס",
+  "description": "תסבירו מילים בלי להגיד אותן! משחק מילים משפחתי מטורף.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#C62828",
+  "theme_color": "#C62828",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
