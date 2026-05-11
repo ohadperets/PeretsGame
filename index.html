@@ -51,6 +51,9 @@
             <button class="btn btn-primary btn-large btn-resume" id="btn-resume" onclick="resumeSavedGame()" style="display:none; background: linear-gradient(135deg, #2E7D32, #1B5E20);">
                 <span>▶️</span> המשך משחק שמור
             </button>
+            <button class="btn btn-primary btn-large" onclick="showScreen('screen-omer-setup')" style="background: linear-gradient(135deg, #FF6F00, #F57C00);">
+                <span>🎂</span> יום הולדת עומר (8)
+            </button>
             <button class="btn btn-secondary" onclick="showScreen('screen-rules')">
                 <span>📖</span> חוקי המשחק
             </button>
@@ -173,6 +176,75 @@
 
             <button class="btn btn-primary btn-large" onclick="startGame()" style="margin-top: 24px;">
                 🚀 התחל משחק!
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ SCREEN: OMER SETUP ============ -->
+    <div id="screen-omer-setup" class="screen">
+        <div class="screen-content">
+            <div class="screen-header">
+                <button class="btn-back" onclick="showScreen('screen-home')">→</button>
+                <h2>🎂 יום הולדת עומר</h2>
+            </div>
+
+            <div class="omer-event-banner">
+                <div class="omer-emoji">🎉🎂🎈</div>
+                <h3>יום הולדת שמח עומר!</h3>
+                <p>בן 8 – מסיבה עם מילים מיוחדות!</p>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">מספר קבוצות</label>
+                <div class="team-selector">
+                    <button class="team-btn selected" onclick="setOmerTeams(2)">2</button>
+                    <button class="team-btn" onclick="setOmerTeams(3)">3</button>
+                    <button class="team-btn" onclick="setOmerTeams(4)">4</button>
+                </div>
+            </div>
+
+            <div class="setup-section" id="omer-team-names-section">
+                <label class="setup-label">שמות קבוצות</label>
+                <div id="omer-team-names-inputs"></div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">רמת קושי</label>
+                <div class="difficulty-selector">
+                    <button class="diff-btn diff-easy selected" data-diff="easy" onclick="setOmerDifficulty('easy')">
+                        🟢 קל
+                    </button>
+                    <button class="diff-btn diff-medium" data-diff="medium" onclick="setOmerDifficulty('medium')">
+                        🟡 בינוני
+                    </button>
+                    <button class="diff-btn diff-hard" data-diff="hard" onclick="setOmerDifficulty('hard')">
+                        🔴 קשה
+                    </button>
+                    <button class="diff-btn diff-mix" data-diff="mix" onclick="setOmerDifficulty('mix')">
+                        🎲 מעורב
+                    </button>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">יעד ניצחון</label>
+                <div class="goal-selector">
+                    <button class="goal-btn" onclick="setOmerGoal(10)">10</button>
+                    <button class="goal-btn selected" onclick="setOmerGoal(20)">20</button>
+                    <button class="goal-btn" onclick="setOmerGoal(30)">30</button>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">דילוג</label>
+                <div class="skip-selector">
+                    <button class="skip-btn selected" data-skip="free" onclick="setOmerSkipPenalty('free')">חינם (0)</button>
+                    <button class="skip-btn" data-skip="penalty" onclick="setOmerSkipPenalty('penalty')">עם קנס (-1)</button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-large" onclick="startOmerGame()" style="margin-top: 24px; background: linear-gradient(135deg, #FF6F00, #F57C00);">
+                🎂 התחל מסיבה!
             </button>
         </div>
     </div>
@@ -302,6 +374,7 @@
     <script src="/__/firebase/init.js"></script>
 
     <script src="words.js"></script>
+    <script src="words-omer.js"></script>
     <script src="db.js"></script>
     <script src="game.js"></script>
 </body>

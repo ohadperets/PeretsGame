@@ -937,9 +937,166 @@ function resumeSavedGame() {
     showScreen('screen-scoreboard');
 }
 
+// ==============================
+// OMER BIRTHDAY EVENT (sub-game)
+// ==============================
+
+let omerState = {
+    numTeams: 2,
+    difficulty: 'easy',
+    goal: 20,
+    skipPenalty: 'free',
+};
+
+function setOmerTeams(num) {
+    omerState.numTeams = num;
+    const btns = document.querySelectorAll('#screen-omer-setup .team-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    btns.forEach(b => {
+        if (parseInt(b.textContent) === num) b.classList.add('selected');
+    });
+    renderOmerTeamNameInputs();
+}
+
+function renderOmerTeamNameInputs() {
+    const container = document.getElementById('omer-team-names-inputs');
+    container.innerHTML = '';
+    for (let i = 0; i < omerState.numTeams; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'team-name-input';
+        input.placeholder = TEAM_DEFAULTS[i];
+        input.dataset.index = i;
+        input.style.borderRightColor = TEAM_COLORS[i];
+        input.style.borderRightWidth = '4px';
+        container.appendChild(input);
+    }
+}
+
+function setOmerDifficulty(diff) {
+    omerState.difficulty = diff;
+    const btns = document.querySelectorAll('#screen-omer-setup .diff-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    document.querySelector(`#screen-omer-setup [data-diff="${diff}"]`).classList.add('selected');
+}
+
+function setOmerGoal(goal) {
+    omerState.goal = goal;
+    const btns = document.querySelectorAll('#screen-omer-setup .goal-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    btns.forEach(b => {
+        if (parseInt(b.textContent) === goal) b.classList.add('selected');
+    });
+}
+
+function setOmerSkipPenalty(penalty) {
+    omerState.skipPenalty = penalty;
+    const btns = document.querySelectorAll('#screen-omer-setup .skip-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    document.querySelector(`#screen-omer-setup [data-skip="${penalty}"]`).classList.add('selected');
+}
+
+function startOmerGame() {
+    // Set game state using Omer settings
+    gameState.numTeams = omerState.numTeams;
+    gameState.difficulty = omerState.difficulty;
+    gameState.goal = omerState.goal;
+    gameState.skipPenalty = omerState.skipPenalty;
+    gameState.mode = 'omer'; // Mark as Omer event
+
+    // Collect team names
+    gameState.teams = [];
+    const inputs = document.querySelectorAll('#omer-team-names-inputs .team-name-input');
+    for (let i = 0; i < gameState.numTeams; i++) {
+        const name = (inputs[i] && inputs[i].value.trim()) || TEAM_DEFAULTS[i];
+        gameState.teams.push({ name, score: 0, color: TEAM_COLORS[i] });
+    }
+
+    // Set timer duration
+    gameState.timerDuration = 60;
+    gameState.currentTeamIndex = 0;
+
+    // Reset used words
+    turnState.usedWords = new Set();
+
+    // Log game start
+    DB.logGameStart(gameState).then(docId => {
+        currentGameDocId = docId;
+    });
+    DB.incrementGamesCounter();
+
+    saveGameState();
+    prepareTurn();
+    showScreen('screen-turn');
+}
+
+// Override buildWordQueue to use WORDS_OMER when in Omer mode
+const _originalBuildWordQueue = buildWordQueue;
+function buildWordQueue() {
+    if (gameState.mode !== 'omer') {
+        return _originalBuildWordQueue();
+    }
+
+    let pool = [];
+    const wordSource = WORDS_OMER;
+
+    if (gameState.difficulty === 'mix') {
+        for (const cat of Object.keys(wordSource)) {
+            wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
+        }
+    } else {
+        const cat = gameState.difficulty;
+        if (wordSource[cat]) {
+            wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
+        }
+    }
+
+    // Remove duplicates
+    const seen = new Set();
+    pool = pool.filter(item => {
+        if (seen.has(item.word)) return false;
+        seen.add(item.word);
+        return true;
+    });
+
+    // Remove used words
+    pool = pool.filter(item => !turnState.usedWords.has(item.word));
+
+    // Reset if exhausted
+    if (pool.length === 0) {
+        turnState.usedWords.clear();
+        pool = [];
+        if (gameState.difficulty === 'mix') {
+            for (const cat of Object.keys(wordSource)) {
+                wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
+            }
+        } else {
+            const cat = gameState.difficulty;
+            if (wordSource[cat]) {
+                wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
+            }
+        }
+        const seen2 = new Set();
+        pool = pool.filter(item => {
+            if (seen2.has(item.word)) return false;
+            seen2.add(item.word);
+            return true;
+        });
+    }
+
+    // Shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+
+    return pool;
+}
+
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', () => {
     DB.init();
     renderTeamNameInputs();
+    renderOmerTeamNameInputs();
     checkSavedGame();
 });

@@ -915,3 +915,32 @@ body {
     .word-text { font-size: 3.2rem; }
     .game-title { font-size: 4.5rem; }
 }
+
+/* ==============================
+   OMER BIRTHDAY EVENT
+   ============================== */
+.omer-event-banner {
+    background: linear-gradient(135deg, #FF6F00, #FFB300);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-align: center;
+    margin-bottom: 24px;
+    color: var(--white);
+    box-shadow: 0 4px 20px rgba(255, 111, 0, 0.3);
+}
+
+.omer-emoji {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+}
+
+.omer-event-banner h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.omer-event-banner p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
