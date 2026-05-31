@@ -142,18 +142,17 @@ function startTurn() {
 
 // ---- Word Queue ----
 function buildWordQueue() {
+    const wordSource = gameState.mode === 'omer' ? WORDS_OMER : WORDS;
     let pool = [];
 
     if (gameState.difficulty === 'mix') {
-        // All categories
-        for (const cat of Object.keys(WORDS)) {
-            WORDS[cat].forEach(w => pool.push({ word: w, category: cat }));
+        for (const cat of Object.keys(wordSource)) {
+            wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
         }
     } else {
-        // Single difficulty
         const cat = gameState.difficulty;
-        if (WORDS[cat]) {
-            WORDS[cat].forEach(w => pool.push({ word: w, category: cat }));
+        if (wordSource[cat]) {
+            wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
         }
     }
 
@@ -173,16 +172,15 @@ function buildWordQueue() {
         turnState.usedWords.clear();
         pool = [];
         if (gameState.difficulty === 'mix') {
-            for (const cat of Object.keys(WORDS)) {
-                WORDS[cat].forEach(w => pool.push({ word: w, category: cat }));
+            for (const cat of Object.keys(wordSource)) {
+                wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
             }
         } else {
             const cat = gameState.difficulty;
-            if (WORDS[cat]) {
-                WORDS[cat].forEach(w => pool.push({ word: w, category: cat }));
+            if (wordSource[cat]) {
+                wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
             }
         }
-        // Deduplicate again after reset
         const seen2 = new Set();
         pool = pool.filter(item => {
             if (seen2.has(item.word)) return false;
@@ -1028,69 +1026,6 @@ function startOmerGame() {
     saveGameState();
     prepareTurn();
     showScreen('screen-turn');
-}
-
-// Override buildWordQueue to use WORDS_OMER when in Omer mode
-const _originalBuildWordQueue = buildWordQueue;
-function buildWordQueue() {
-    if (gameState.mode !== 'omer') {
-        return _originalBuildWordQueue();
-    }
-
-    let pool = [];
-    const wordSource = WORDS_OMER;
-
-    if (gameState.difficulty === 'mix') {
-        for (const cat of Object.keys(wordSource)) {
-            wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
-        }
-    } else {
-        const cat = gameState.difficulty;
-        if (wordSource[cat]) {
-            wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
-        }
-    }
-
-    // Remove duplicates
-    const seen = new Set();
-    pool = pool.filter(item => {
-        if (seen.has(item.word)) return false;
-        seen.add(item.word);
-        return true;
-    });
-
-    // Remove used words
-    pool = pool.filter(item => !turnState.usedWords.has(item.word));
-
-    // Reset if exhausted
-    if (pool.length === 0) {
-        turnState.usedWords.clear();
-        pool = [];
-        if (gameState.difficulty === 'mix') {
-            for (const cat of Object.keys(wordSource)) {
-                wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
-            }
-        } else {
-            const cat = gameState.difficulty;
-            if (wordSource[cat]) {
-                wordSource[cat].forEach(w => pool.push({ word: w, category: cat }));
-            }
-        }
-        const seen2 = new Set();
-        pool = pool.filter(item => {
-            if (seen2.has(item.word)) return false;
-            seen2.add(item.word);
-            return true;
-        });
-    }
-
-    // Shuffle
-    for (let i = pool.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-
-    return pool;
 }
 
 // ---- Init ----
