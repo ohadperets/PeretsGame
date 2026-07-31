@@ -51,8 +51,8 @@
             <button class="btn btn-primary btn-large btn-resume" id="btn-resume" onclick="resumeSavedGame()" style="display:none; background: linear-gradient(135deg, #2E7D32, #1B5E20);">
                 <span>▶️</span> המשך משחק שמור
             </button>
-            <button class="btn btn-primary btn-large" onclick="showScreen('screen-omer-setup')" style="background: linear-gradient(135deg, #FF6F00, #F57C00);">
-                <span>🎂</span> יום הולדת עומר (8)
+            <button class="btn btn-primary btn-large" onclick="showScreen('screen-cfg-yas-setup')" style="background: linear-gradient(135deg, #0D47A1, #0288D1);">
+                <span>🛡️</span> CFG-Yas Team Edition
             </button>
             <button class="btn btn-secondary" onclick="showScreen('screen-rules')">
                 <span>📖</span> חוקי המשחק
@@ -249,6 +249,75 @@
         </div>
     </div>
 
+    <!-- ============ SCREEN: CFG-YAS SETUP ============ -->
+    <div id="screen-cfg-yas-setup" class="screen">
+        <div class="screen-content">
+            <div class="screen-header">
+                <button class="btn-back" onclick="showScreen('screen-home')">→</button>
+                <h2>🛡️ CFG-Yas</h2>
+            </div>
+
+            <div class="cfg-yas-event-banner">
+                <div class="cfg-yas-emoji">⚙️🧠📊</div>
+                <h3>מילים של צוות CFG-Yas</h3>
+                <p>גרסת עבודה לצוות - מושגים, קיצורים ומשפטים פנימיים</p>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">מספר קבוצות</label>
+                <div class="team-selector">
+                    <button class="team-btn selected" onclick="setCfgYasTeams(2)">2</button>
+                    <button class="team-btn" onclick="setCfgYasTeams(3)">3</button>
+                    <button class="team-btn" onclick="setCfgYasTeams(4)">4</button>
+                </div>
+            </div>
+
+            <div class="setup-section" id="cfg-yas-team-names-section">
+                <label class="setup-label">שמות קבוצות</label>
+                <div id="cfg-yas-team-names-inputs"></div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">רמת קושי</label>
+                <div class="difficulty-selector">
+                    <button class="diff-btn diff-easy selected" data-diff="easy" onclick="setCfgYasDifficulty('easy')">
+                        🟢 קל
+                    </button>
+                    <button class="diff-btn diff-medium" data-diff="medium" onclick="setCfgYasDifficulty('medium')">
+                        🟡 בינוני
+                    </button>
+                    <button class="diff-btn diff-hard" data-diff="hard" onclick="setCfgYasDifficulty('hard')">
+                        🔴 קשה
+                    </button>
+                    <button class="diff-btn diff-mix" data-diff="mix" onclick="setCfgYasDifficulty('mix')">
+                        🎲 מעורב
+                    </button>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">יעד ניצחון</label>
+                <div class="goal-selector">
+                    <button class="goal-btn" onclick="setCfgYasGoal(15)">15</button>
+                    <button class="goal-btn selected" onclick="setCfgYasGoal(30)">30</button>
+                    <button class="goal-btn" onclick="setCfgYasGoal(50)">50</button>
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <label class="setup-label">דילוג</label>
+                <div class="skip-selector">
+                    <button class="skip-btn selected" data-skip="free" onclick="setCfgYasSkipPenalty('free')">חינם (0)</button>
+                    <button class="skip-btn" data-skip="penalty" onclick="setCfgYasSkipPenalty('penalty')">עם קנס (-1)</button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-large" onclick="startCfgYasGame()" style="margin-top: 24px; background: linear-gradient(135deg, #0D47A1, #0288D1);">
+                🚀 התחל CFG-Yas
+            </button>
+        </div>
+    </div>
+
     <!-- ============ SCREEN: TURN INTRO ============ -->
     <div id="screen-turn" class="screen">
         <div class="turn-container">
@@ -375,6 +444,7 @@
 
     <script src="words.js"></script>
     <script src="words-omer.js"></script>
+    <script src="words-cfg-yas.js"></script>
     <script src="db.js"></script>
     <script src="game.js"></script>
 </body>

@@ -142,7 +142,12 @@ function startTurn() {
 
 // ---- Word Queue ----
 function buildWordQueue() {
-    const wordSource = gameState.mode === 'omer' ? WORDS_OMER : WORDS;
+    let wordSource = WORDS;
+    if (gameState.mode === 'omer') {
+        wordSource = WORDS_OMER;
+    } else if (gameState.mode === 'cfg-yas') {
+        wordSource = WORDS_CFG_YAS;
+    }
     let pool = [];
 
     if (gameState.difficulty === 'mix') {
@@ -1028,10 +1033,104 @@ function startOmerGame() {
     showScreen('screen-turn');
 }
 
+// ==============================
+// CFG-YAS EVENT (sub-game)
+// ==============================
+
+let cfgYasState = {
+    numTeams: 2,
+    difficulty: 'easy',
+    goal: 30,
+    skipPenalty: 'free',
+};
+
+function setCfgYasTeams(num) {
+    cfgYasState.numTeams = num;
+    const btns = document.querySelectorAll('#screen-cfg-yas-setup .team-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    btns.forEach(b => {
+        if (parseInt(b.textContent) === num) b.classList.add('selected');
+    });
+    renderCfgYasTeamNameInputs();
+}
+
+function renderCfgYasTeamNameInputs() {
+    const container = document.getElementById('cfg-yas-team-names-inputs');
+    container.innerHTML = '';
+    for (let i = 0; i < cfgYasState.numTeams; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'team-name-input';
+        input.placeholder = TEAM_DEFAULTS[i];
+        input.dataset.index = i;
+        input.style.borderRightColor = TEAM_COLORS[i];
+        input.style.borderRightWidth = '4px';
+        container.appendChild(input);
+    }
+}
+
+function setCfgYasDifficulty(diff) {
+    cfgYasState.difficulty = diff;
+    const btns = document.querySelectorAll('#screen-cfg-yas-setup .diff-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    document.querySelector(`#screen-cfg-yas-setup [data-diff="${diff}"]`).classList.add('selected');
+}
+
+function setCfgYasGoal(goal) {
+    cfgYasState.goal = goal;
+    const btns = document.querySelectorAll('#screen-cfg-yas-setup .goal-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    btns.forEach(b => {
+        if (parseInt(b.textContent) === goal) b.classList.add('selected');
+    });
+}
+
+function setCfgYasSkipPenalty(penalty) {
+    cfgYasState.skipPenalty = penalty;
+    const btns = document.querySelectorAll('#screen-cfg-yas-setup .skip-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    document.querySelector(`#screen-cfg-yas-setup [data-skip="${penalty}"]`).classList.add('selected');
+}
+
+function startCfgYasGame() {
+    // Set game state using CFG-Yas settings
+    gameState.numTeams = cfgYasState.numTeams;
+    gameState.difficulty = cfgYasState.difficulty;
+    gameState.goal = cfgYasState.goal;
+    gameState.skipPenalty = cfgYasState.skipPenalty;
+    gameState.mode = 'cfg-yas';
+
+    // Collect team names
+    gameState.teams = [];
+    const inputs = document.querySelectorAll('#cfg-yas-team-names-inputs .team-name-input');
+    for (let i = 0; i < gameState.numTeams; i++) {
+        const name = (inputs[i] && inputs[i].value.trim()) || TEAM_DEFAULTS[i];
+        gameState.teams.push({ name, score: 0, color: TEAM_COLORS[i] });
+    }
+
+    // Set timer duration
+    gameState.timerDuration = 60;
+    gameState.currentTeamIndex = 0;
+
+    // Reset used words
+    turnState.usedWords = new Set();
+
+    // Log game start
+    DB.logGameStart(gameState).then(docId => {
+        currentGameDocId = docId;
+    });
+    DB.incrementGamesCounter();
+
+    saveGameState();
+    prepareTurn();
+    showScreen('screen-turn');
+}
+
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', () => {
     DB.init();
     renderTeamNameInputs();
     renderOmerTeamNameInputs();
+    renderCfgYasTeamNameInputs();
     checkSavedGame();
 });
